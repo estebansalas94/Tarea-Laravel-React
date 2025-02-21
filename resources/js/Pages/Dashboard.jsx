@@ -2,8 +2,23 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import RedirectLink from '@/Components/RedirectLink';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Dashboard({tasks}) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const tasksPerPage = 5;
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTasks = tasks.filter((task) =>
+        task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
+    const indexOfLastTask = currentPage * tasksPerPage;
+    const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+    const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
+
     return (
         <AuthenticatedLayout
             header={
@@ -14,13 +29,28 @@ export default function Dashboard({tasks}) {
         >
             <Head title="Task" />
 
-            <div className="py-12">
+            <div className="py-2">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                         <RedirectLink href='tasks/create'>Crear tarea</RedirectLink>
                 </div>
             </div>
+            
+            <div className="py-4">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
+                        <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Buscar tareas..."
+                        className="px-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-100"
+                        />
+                    </div>
+                </div>
+            </div>
 
-            <div className="py-12">
+
+            <div className="py-4">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
@@ -47,7 +77,7 @@ export default function Dashboard({tasks}) {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                    {tasks.map((task) => (
+                                    {currentTasks.map((task) => (
                                         <tr key={task.id}>
                                             <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                                 {task.id}
@@ -70,12 +100,32 @@ export default function Dashboard({tasks}) {
                                                 )}
                                             </td>
                                             <td className='px-6 py-4 text-sm text-gray-900 dark:text-gray-100'>
-                                                <RedirectLink href={`tasks/${task.id}/edit`}>Editar</RedirectLink>
+                                                <RedirectLink href={`tasks/${task.id}/edit`} className={task.completed ? "pointer-events-none opacity-50" : ""}>Editar</RedirectLink>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                            <p className="text-center">{filteredTasks.length === 0 ? "No se encontraron tareas" : ""}</p>
+                            <div className="flex justify-center mt-4">
+                                <button
+                                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-4 py-2 mx-1 text-sm font-medium text-white bg-gray-600 rounded-lg disabled:opacity-50"
+                                >
+                                    Anterior
+                                </button>
+                                <span className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">
+                                    Página {currentPage} de {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-4 py-2 mx-1 text-sm font-medium text-white bg-gray-600 rounded-lg disabled:opacity-50"
+                                >
+                                    Siguiente
+                                </button>
+                            </div>
                         </div>
                         </div>
                     </div>
