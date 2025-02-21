@@ -9,7 +9,11 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
+        <link rel="icon" href="https://i.postimg.cc/J0dz34vm/tarea.png"sizes="32x32" />
+        <link rel="icon" href="https://i.postimg.cc/J0dz34vm/tarea.png"sizes="192x192" />
+        <link rel="apple-touch-icon" href="https://i.postimg.cc/J0dz34vm/tarea.png" />
+        <meta name="msapplication-TileImage"
+        content="https://i.postimg.cc/J0dz34vm/tarea.png" />
         <!-- Scripts -->
         @routes
         @viteReactRefresh
