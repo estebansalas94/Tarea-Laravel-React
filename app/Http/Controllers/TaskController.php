@@ -70,13 +70,16 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $teclado = $request->input('completed');
+        //dd($request->all()); 
+        $taskData = $request->input('tasks.0');
         $task = Task::findOrFail($id);
-        $task->completed = $request->input('completed');
-        $task->save();
+        $task->update([
+            'name' => $taskData['name'],
+            'description' => $taskData['description'],
+            'completed' => $taskData['completed'],
+        ]);
 
         return redirect()->route('dashboard')->with('success', 'Tarea actualizada correctamente.');
-        //return redirect(route('dashboard', absolute: false));
 
     }
 
