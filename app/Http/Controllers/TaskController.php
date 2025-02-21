@@ -38,7 +38,7 @@ class TaskController extends Controller
             
         ]);
 
-        $task = Task::create([
+        $task=Task::create([
             'name' => $request->name,
             'description' => $request->description,
             'completed' => false,
@@ -70,12 +70,14 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $teclado = $request->input('completed');
         $task = Task::findOrFail($id);
         $task->completed = $request->input('completed');
-        dd($task);
         $task->save();
 
-        return redirect()->back()->with('success', 'Tarea actualizada exitosamente.');
+        return redirect()->route('dashboard')->with('success', 'Tarea actualizada correctamente.');
+        //return redirect(route('dashboard', absolute: false));
+
     }
 
     /**

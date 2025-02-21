@@ -5,7 +5,6 @@ import { Head, Link, useForm } from '@inertiajs/react';
 
 const TaskEdit = ({ tasks }) => {
     const tasksArray = Array.isArray(tasks) ? tasks : [tasks];
-
     // Usa useForm para manejar el formulario y las solicitudes HTTP
     const { data, setData, put, processing, errors } = useForm({
         tasks: tasksArray.map(task => ({
@@ -15,16 +14,16 @@ const TaskEdit = ({ tasks }) => {
 
     // Función para manejar la actualización de la tarea
     const handleUpdate = (taskId) => {
-        // Envía la solicitud de actualización al servidor
-        put(route('tasks.update', taskId));
+        put(route('tasks.update', taskId), {
+            name: data.name,
+            description: data.description,
+            completed: data.completed, 
+        });
     };
 
     // Función para actualizar el estado de la tarea
-    const updateTaskStatus = (taskId, completed) => {
-        console.log('taskId', taskId);
-        setData('tasks', data.tasks.map(task => 
-            task.id === taskId ? { ...task, completed } : task
-        ));
+    const updateTaskStatus = (taskId, isCompleted) => {
+        setData('completed', isCompleted); 
     };
 
     return (
@@ -65,17 +64,17 @@ const TaskEdit = ({ tasks }) => {
                                     {task.description}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                    <select
-                                        name={`status_${task.id}`}
-                                        defaultValue={task.completed ? '1' : '0'}
-                                        className="rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
-                                        onChange={(e) =>
-                                            updateTaskStatus(task.id, e.target.value === 'completado')
-                                        }
-                                    >
-                                        <option value="0" name="completed">Pendiente</option>
-                                        <option value="1" name="completed">Completado</option>
-                                    </select>
+                                <select
+                                    name="completed"
+                                    id="completed"
+                                    value={task.completed ? '1' : '0'} // Se selecciona automáticamente según el estado en la BD
+                                    className="rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
+                                    onChange={(e) => updateTaskStatus(task.id, e.target.value === '1')} // Compara con '1'
+                                >
+                                    <option value="0">Pendiente</option>
+                                    <option value="1">Completado</option>
+                                </select>
+
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                     <PrimaryButton
